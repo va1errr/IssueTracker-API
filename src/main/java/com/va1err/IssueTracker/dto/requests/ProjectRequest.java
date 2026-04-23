@@ -1,8 +1,7 @@
 package com.va1err.IssueTracker.dto.requests;
 
-import com.va1err.IssueTracker.enums.Role;
+import com.va1err.IssueTracker.models.User;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,17 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserRequest {
+public class ProjectRequest {
 
     @NotBlank
-    private String email;
+    private String name;
 
-    @NotBlank
-    private String username;
-
-    @Size(min = 8)
-    private String password;
-
-    private Role role;
+    private User owner;
 
 }
