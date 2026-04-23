@@ -4,10 +4,36 @@ A RESTful Issue Tracker backend built with **Spring Boot** and **PostgreSQL**, d
 
 ## Features
 - User, Project, and Issue domain models
+- Enum-based domain constraints (status, priority, roles)
+- Clean architecture with DTO layer
+- Unified API response structure
 - PostgreSQL database (Dockerized)
 - Flyway database migrations
 - JPA entity relationships (One-to-Many / Many-to-One)
-- Enum-based domain constraints (status, priority, roles)
+
+## Architecture
+
+1. **Client** → Makes requests
+2. **Controller** → Handles HTTP requests/responses
+3. **DTO** → Data Transfer Object
+4. **Service** → Business logic layer
+5. **Entity** → Domain model
+6. **Repository** → Data access layer
+7. **Database** → Persistence storage
+
+## API design
+
+### Success response
+
+```json
+{
+  "status": 200,
+  "success": true,
+  "message": "<Relevant Message>",
+  "data": ["<Relevant data>"],
+  "timestamp": "<Timestamp>"
+}
+```
 
 ## Database Initialization
 
