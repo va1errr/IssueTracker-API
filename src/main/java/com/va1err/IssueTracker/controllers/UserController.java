@@ -2,6 +2,8 @@ package com.va1err.IssueTracker.controllers;
 
 import com.va1err.IssueTracker.dto.requests.UserRequest;
 import com.va1err.IssueTracker.dto.responses.ApiResponse;
+import com.va1err.IssueTracker.dto.responses.IssueResponse;
+import com.va1err.IssueTracker.dto.responses.ProjectResponse;
 import com.va1err.IssueTracker.dto.responses.UserResponse;
 import com.va1err.IssueTracker.services.UserService;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
@@ -26,7 +28,7 @@ public class UserController {
     public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
         UserResponse response = userService.createUser(request);
 
-        return ApiResponseUtil.success(response, "User successfully created");
+        return ApiResponseUtil.success(response, "User created successfully");
     }
 
     @GetMapping
@@ -41,6 +43,34 @@ public class UserController {
         UserResponse response = userService.getUserById(id);
 
         return ApiResponseUtil.success(response, "User found");
+    }
+
+    @GetMapping("/{id}/projects")
+    public ApiResponse<List<ProjectResponse>> getUserProjects(@PathVariable Long id) {
+        List<ProjectResponse> response = userService.getUserProjects(id);
+
+        return ApiResponseUtil.success(response, "User projects fetched successfully");
+    }
+
+    @GetMapping("/{userId}/projects/{projectId}")
+    public ApiResponse<ProjectResponse> getUserProject(@PathVariable Long userId, @PathVariable Long projectId) {
+        ProjectResponse response = userService.getUserProjectById(userId, projectId);
+
+        return ApiResponseUtil.success(response, "User project found");
+    }
+
+    @GetMapping("/{userId}/projects/{projectId}/issues")
+    public ApiResponse<List<IssueResponse>> getUserProjectIssues(@PathVariable Long userId, @PathVariable Long projectId) {
+        List<IssueResponse> response = userService.getUserProjectIssues(userId, projectId);
+
+        return ApiResponseUtil.success(response, "User project issues fetched successfully");
+    }
+
+    @GetMapping("/{userId}/projects/{projectId}/issues/{issueId}")
+    public ApiResponse<IssueResponse> getUserProjectIssue(@PathVariable Long userId, @PathVariable Long projectId, @PathVariable Long issueId) {
+        IssueResponse response = userService.getUserProjectIssueById(userId, projectId, issueId);
+
+        return ApiResponseUtil.success(response, "User project issue found");
     }
 
     @DeleteMapping("/{id}")

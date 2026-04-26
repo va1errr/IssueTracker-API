@@ -23,14 +23,10 @@ public class UserResponse {
 
     private String username;
 
-    private String password;
-
     private Role role;
 
     private LocalDateTime createdAt;
 
-    private List<Project> projects;
-
-    private List<Issue> issues;
+    private List<ProjectResponse> projects;
 
 }

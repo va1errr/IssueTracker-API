@@ -1,10 +1,20 @@
 package com.va1err.IssueTracker.services;
 
 import com.va1err.IssueTracker.dto.requests.UserRequest;
+import com.va1err.IssueTracker.dto.responses.IssueResponse;
+import com.va1err.IssueTracker.dto.responses.ProjectResponse;
 import com.va1err.IssueTracker.dto.responses.UserResponse;
+import com.va1err.IssueTracker.exceptions.IssueNotFoundException;
+import com.va1err.IssueTracker.exceptions.ProjectNotFoundException;
 import com.va1err.IssueTracker.exceptions.UserNotFoundException;
+import com.va1err.IssueTracker.models.Issue;
+import com.va1err.IssueTracker.models.Project;
 import com.va1err.IssueTracker.models.User;
+import com.va1err.IssueTracker.repositories.IssueRepository;
+import com.va1err.IssueTracker.repositories.ProjectRepository;
 import com.va1err.IssueTracker.repositories.UserRepository;
+import com.va1err.IssueTracker.utils.IssueUtil;
+import com.va1err.IssueTracker.utils.ProjectUtil;
 import com.va1err.IssueTracker.utils.UserUtil;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +24,13 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+    private final IssueRepository issueRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ProjectRepository projectRepository, IssueRepository issueRepository) {
         this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
+        this.issueRepository = issueRepository;
     }
 
     public UserResponse createUser(UserRequest request) {
@@ -41,6 +55,48 @@ public class UserService {
     public UserResponse getUserById(Long id) {
         return UserUtil.toResponse(userRepository.findById(id)
                         .orElseThrow(() -> new UserNotFoundException(id)));
+    }
+
+    public List<ProjectResponse> getUserProjects(Long id) {
+        if (!userRepository.existsById(id))
+            throw new UserNotFoundException(id);
+
+        return projectRepository.findAllByOwnerId(id).stream().map(ProjectUtil::toResponse).toList();
+    }
+
+    public ProjectResponse getUserProjectById(Long userId, Long projectId) {
+        if (!userRepository.existsById(userId))
+            throw new UserNotFoundException(userId);
+
+        Project project = projectRepository.findByOwnerIdAndId(userId, projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(projectId));
+
+        return ProjectUtil.toResponse(project);
+    }
+
+    public List<IssueResponse> getUserProjectIssues(Long userId, Long projectId) {
+        if (!userRepository.existsById(userId))
+            throw new UserNotFoundException(userId);
+
+        if (!projectRepository.existsByOwnerIdAndId(userId, projectId))
+            throw new ProjectNotFoundException(projectId);
+
+        List<Issue> issues = issueRepository.findAllByOwnerIdAndProjectId(userId, projectId);
+
+        return issues.stream().map(IssueUtil::toResponse).toList();
+    }
+
+    public IssueResponse getUserProjectIssueById(Long userId, Long projectId, Long issueId) {
+        if (!userRepository.existsById(userId))
+            throw new UserNotFoundException(userId);
+
+        if (!projectRepository.existsByOwnerIdAndId(userId, projectId))
+            throw new ProjectNotFoundException(projectId);
+
+        Issue issue = issueRepository.findByOwnerIdAndProjectIdAndId(userId, projectId, issueId)
+                .orElseThrow(() -> new IssueNotFoundException(issueId));
+
+        return IssueUtil.toResponse(issue);
     }
 
     public void deleteUserById(Long id) {

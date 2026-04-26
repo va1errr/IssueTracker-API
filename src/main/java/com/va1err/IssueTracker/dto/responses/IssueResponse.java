@@ -27,9 +27,9 @@ public class IssueResponse {
 
     private Priority priority;
 
-    private Project project;
+    private Long projectId;
 
-    private User owner;
+    private Long ownerId;
 
     private LocalDateTime createdAt;
 
