@@ -25,8 +25,8 @@ public class IssueRequest {
 
     private Priority priority;
 
-    private Project project;
+    private Long projectId;
 
-    private User owner;
+    private Long ownerId;
 
 }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -54,6 +55,10 @@ public class User {
     private void setDefaults() {
         if (role == null)
             role = Role.USER;
+        if (projects == null)
+            projects = new ArrayList<>();
+        if (issues == null)
+            issues = new ArrayList<>();
     }
 
 }
