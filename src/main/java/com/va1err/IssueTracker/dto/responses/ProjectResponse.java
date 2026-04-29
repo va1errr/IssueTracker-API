@@ -1,7 +1,5 @@
 package com.va1err.IssueTracker.dto.responses;
 
-import com.va1err.IssueTracker.models.Issue;
-import com.va1err.IssueTracker.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,10 +18,10 @@ public class ProjectResponse {
 
     private String name;
 
-    private User owner;
+    private Long ownerId;
 
     private LocalDateTime createdAt;
 
-    private List<Issue> issues;
+    private List<IssueResponse> issues;
 
 }

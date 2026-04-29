@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -37,5 +38,11 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     private List<Issue> issues;
+
+    @PrePersist
+    public void setDefaults() {
+        if (issues == null)
+            issues = new ArrayList<>();
+    }
 
 }
