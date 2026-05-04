@@ -382,7 +382,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void deleteUserById_shouldReturnDeleteUser_whenFound() {
+    public void deleteUserById_shouldDeleteUser_whenFound() {
         when(userRepository.existsById(eq(1L))).thenReturn(true);
 
         userService.deleteUserById(1L);
