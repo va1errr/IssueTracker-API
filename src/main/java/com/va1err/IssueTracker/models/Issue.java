@@ -58,4 +58,18 @@ public class Issue {
             priority = Priority.MEDIUM;
     }
 
+    public void setDescription(String description) {
+        if (description == null) this.description = "";
+        else this.description = description;
+    }
+
+    public void setStatus(Status status) {
+        if (status == null) this.status = Status.OPEN;
+        else this.status = status;
+    }
+
+    public void setPriority(Priority priority) {
+        if (priority == null) this.priority = Priority.MEDIUM;
+        else this.priority = priority;
+    }
 }

@@ -61,4 +61,8 @@ public class User {
             issues = new ArrayList<>();
     }
 
+    public void setRole(Role role) {
+        if (role == null) this.role = Role.USER;
+        else this.role = role;
+    }
 }
