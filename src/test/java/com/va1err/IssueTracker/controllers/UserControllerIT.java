@@ -461,7 +461,7 @@ public class UserControllerIT {
     }
 
     @Test
-    public void updateUser_shouldUpdateAndReturnUser_whenValidAndFound() throws Exception {
+    public void updateUser_shouldUpdateAndReturnUser_whenValidAndFoundAndRoleNull() throws Exception {
         User user = userRepository.save(User.builder()
                 .email("test@email")
                 .username("test")
@@ -485,7 +485,40 @@ public class UserControllerIT {
                 .andExpect(jsonPath("$.message").value("User found and updated"))
                 .andExpect(jsonPath("$.data.id").value(user.getId()))
                 .andExpect(jsonPath("$.data.email").value("update_test@email"))
-                .andExpect(jsonPath("$.data.username").value("update test"));
+                .andExpect(jsonPath("$.data.username").value("update test"))
+                .andExpect(jsonPath("$.data.role").value("USER"));
+
+        assertThat(userRepository.count()).isEqualTo(userCountBefore);
+    }
+
+    @Test
+    public void updateUser_shouldUpdateAndReturnUser_whenValidAndFoundAndRoleNotNull() throws Exception {
+        User user = userRepository.save(User.builder()
+                .email("test@email")
+                .username("test")
+                .password("password")
+                .build());
+
+        long userCountBefore = userRepository.count();
+
+        UserRequest request = UserRequest.builder()
+                .email("update_test@email")
+                .username("update test")
+                .password("update password")
+                .role(Role.ADMIN)
+                .build();
+
+        mockMvc.perform(put("/users/" + user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("User found and updated"))
+                .andExpect(jsonPath("$.data.id").value(user.getId()))
+                .andExpect(jsonPath("$.data.email").value("update_test@email"))
+                .andExpect(jsonPath("$.data.username").value("update test"))
+                .andExpect(jsonPath("$.data.role").value("ADMIN"));
 
         assertThat(userRepository.count()).isEqualTo(userCountBefore);
     }
