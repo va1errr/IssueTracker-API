@@ -471,9 +471,9 @@ public class UserControllerIT {
         long userCountBefore = userRepository.count();
 
         UserRequest request = UserRequest.builder()
-                .email("test@email")
-                .username("test")
-                .password("password")
+                .email("update_test@email")
+                .username("update test")
+                .password("update password")
                 .build();
 
         mockMvc.perform(put("/users/" + user.getId())
@@ -483,7 +483,9 @@ public class UserControllerIT {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.message").value("User found and updated"))
-                .andExpect(jsonPath("$.data.id").value(user.getId()));
+                .andExpect(jsonPath("$.data.id").value(user.getId()))
+                .andExpect(jsonPath("$.data.email").value("update_test@email"))
+                .andExpect(jsonPath("$.data.username").value("update test"));
 
         assertThat(userRepository.count()).isEqualTo(userCountBefore);
     }
@@ -498,8 +500,8 @@ public class UserControllerIT {
 
         UserRequest request = UserRequest.builder()
                 .email("")
-                .username("test")
-                .password("password")
+                .username("update test")
+                .password("update password")
                 .build();
 
         mockMvc.perform(put("/users/" + user.getId())
@@ -521,9 +523,9 @@ public class UserControllerIT {
                 .build());
 
         UserRequest request = UserRequest.builder()
-                .email("test@email")
+                .email("update_test@email")
                 .username("")
-                .password("password")
+                .password("update password")
                 .build();
 
         mockMvc.perform(put("/users/" + user.getId())
@@ -545,8 +547,8 @@ public class UserControllerIT {
                 .build());
 
         UserRequest request = UserRequest.builder()
-                .email("test@email")
-                .username("test")
+                .email("update_test@email")
+                .username("update test")
                 .password("1234567")
                 .build();
 
@@ -563,9 +565,9 @@ public class UserControllerIT {
     @Test
     public void updateUser_shouldReturn404_whenUserNotFound() throws Exception {
         UserRequest request = UserRequest.builder()
-                .email("test@email")
-                .username("test")
-                .password("password")
+                .email("update_test@email")
+                .username("update test")
+                .password("update password")
                 .build();
 
         mockMvc.perform(put("/users/1")
