@@ -4,6 +4,7 @@ import com.va1err.IssueTracker.dto.responses.ErrorResponse;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,6 +25,19 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = ApiResponseUtil.fail(
                 HttpStatus.BAD_REQUEST, errors, "Validation failed"
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleNotValid(HttpMessageNotReadableException e) {
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put("message", e.getMessage());
+
+        ErrorResponse response = ApiResponseUtil.fail(
+                HttpStatus.BAD_REQUEST, errors, "Invalid values"
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
