@@ -9,6 +9,8 @@ import com.va1err.IssueTracker.models.User;
 import com.va1err.IssueTracker.repositories.ProjectRepository;
 import com.va1err.IssueTracker.repositories.UserRepository;
 import com.va1err.IssueTracker.utils.ProjectUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,10 +42,10 @@ public class ProjectService {
         return ProjectUtil.toResponse(project);
     }
 
-    public List<ProjectResponse> getAllProjects() {
-        List<Project> projects = projectRepository.findAll();
+    public Page<ProjectResponse> getAllProjects(Pageable pageable) {
+        Page<Project> page = projectRepository.findAll(pageable);
 
-        return projects.stream().map(ProjectUtil::toResponse).toList();
+        return page.map(ProjectUtil::toResponse);
     }
 
     public ProjectResponse getProjectById(Long id) {

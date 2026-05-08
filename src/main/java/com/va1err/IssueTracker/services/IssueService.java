@@ -2,6 +2,8 @@ package com.va1err.IssueTracker.services;
 
 import com.va1err.IssueTracker.dto.requests.IssueRequest;
 import com.va1err.IssueTracker.dto.responses.IssueResponse;
+import com.va1err.IssueTracker.enums.Priority;
+import com.va1err.IssueTracker.enums.Status;
 import com.va1err.IssueTracker.exceptions.IssueNotFoundException;
 import com.va1err.IssueTracker.exceptions.ProjectNotFoundException;
 import com.va1err.IssueTracker.exceptions.UserNotFoundException;
@@ -12,6 +14,8 @@ import com.va1err.IssueTracker.repositories.IssueRepository;
 import com.va1err.IssueTracker.repositories.ProjectRepository;
 import com.va1err.IssueTracker.repositories.UserRepository;
 import com.va1err.IssueTracker.utils.IssueUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,10 +54,18 @@ public class IssueService {
         return IssueUtil.toResponse(issue);
     }
 
-    public List<IssueResponse> getAllIssues() {
-        List<Issue> issues = issueRepository.findAll();
+    public Page<IssueResponse> getAllIssues(Status status, Priority priority, Pageable pageable) {
+        Page<Issue> page;
 
-        return issues.stream().map(IssueUtil::toResponse).toList();
+        if (status == null && priority == null)
+            page = issueRepository.findAll(pageable);
+        else if (status != null && priority == null)
+            page = issueRepository.findAllByStatus(pageable, status);
+        else if (status == null)
+            page = issueRepository.findAllByPriority(pageable, priority);
+        else page = issueRepository.findAllByStatusAndPriority(pageable, status, priority);
+
+        return page.map(IssueUtil::toResponse);
     }
 
     public IssueResponse getIssueById(Long id) {
