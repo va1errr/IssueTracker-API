@@ -8,6 +8,10 @@ import com.va1err.IssueTracker.services.ProjectService;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -33,8 +37,8 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ApiResponse<List<ProjectResponse>> getAllProjects() {
-        List<ProjectResponse> response = projectService.getAllProjects();
+    public ApiResponse<Page<ProjectResponse>> getAllProjects(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getAllProjects(pageable);
 
         return ApiResponseUtil.success(response, "Projects fetched successfully");
     }

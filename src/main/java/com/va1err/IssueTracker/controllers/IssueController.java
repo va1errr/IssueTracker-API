@@ -4,10 +4,17 @@ import com.va1err.IssueTracker.dto.requests.IssueRequest;
 import com.va1err.IssueTracker.dto.responses.ApiResponse;
 import com.va1err.IssueTracker.dto.responses.IssueResponse;
 import com.va1err.IssueTracker.models.User;
+import com.va1err.IssueTracker.enums.Priority;
+import com.va1err.IssueTracker.enums.Role;
+import com.va1err.IssueTracker.enums.Status;
 import com.va1err.IssueTracker.services.IssueService;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -33,8 +40,8 @@ public class IssueController {
     }
 
     @GetMapping
-    public ApiResponse<List<IssueResponse>> getAllIssues() {
-        List<IssueResponse> response = issueService.getAllIssues();
+    public ApiResponse<Page<IssueResponse>> getAllIssues(@RequestParam(required = false) Status status, @RequestParam(required = false)Priority priority, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<IssueResponse> response = issueService.getAllIssues(status, priority, pageable);
 
         return ApiResponseUtil.success(response, "Issues fetched successfully");
     }

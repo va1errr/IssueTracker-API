@@ -6,10 +6,17 @@ import com.va1err.IssueTracker.dto.responses.IssueResponse;
 import com.va1err.IssueTracker.dto.responses.ProjectResponse;
 import com.va1err.IssueTracker.dto.responses.UserResponse;
 import com.va1err.IssueTracker.models.User;
+import com.va1err.IssueTracker.enums.Priority;
+import com.va1err.IssueTracker.enums.Role;
+import com.va1err.IssueTracker.enums.Status;
 import com.va1err.IssueTracker.services.UserService;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -35,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ApiResponse<List<UserResponse>> getAllUsers() {
-        List<UserResponse> response = userService.getAllUsers();
+    public ApiResponse<Page<UserResponse>> getAllUsers(@RequestParam(required = false) Role role, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<UserResponse> response = userService.getAllUsers(role, pageable);
 
         return ApiResponseUtil.success(response, "Users fetched successfully");
     }
@@ -63,8 +70,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/projects/{projectId}/issues")
-    public ApiResponse<List<IssueResponse>> getUserProjectIssues(@PathVariable Long userId, @PathVariable Long projectId) {
-        List<IssueResponse> response = userService.getUserProjectIssues(userId, projectId);
+    public ApiResponse<Page<IssueResponse>> getUserProjectIssues(@RequestParam(required = false) Status status, @RequestParam(required = false) Priority priority, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable Long userId, @PathVariable Long projectId) {
+        Page<IssueResponse> response = userService.getUserProjectIssues(status, priority, pageable, userId, projectId);
 
         return ApiResponseUtil.success(response, "User project issues fetched successfully");
     }
