@@ -82,4 +82,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(InvalidPasswordException e) {
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put("message", e.getMessage());
+
+        ErrorResponse response = ApiResponseUtil.fail(
+                HttpStatus.BAD_REQUEST, errors, "Invalid"
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 }
