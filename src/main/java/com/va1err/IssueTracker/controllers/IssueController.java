@@ -3,11 +3,14 @@ package com.va1err.IssueTracker.controllers;
 import com.va1err.IssueTracker.dto.requests.IssueRequest;
 import com.va1err.IssueTracker.dto.responses.ApiResponse;
 import com.va1err.IssueTracker.dto.responses.IssueResponse;
+import com.va1err.IssueTracker.models.User;
 import com.va1err.IssueTracker.services.IssueService;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +47,8 @@ public class IssueController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Map<String, Long>> deleteIssue(@PathVariable Long id) {
-        issueService.deleteIssueById(id);
+    public ApiResponse<Map<String, Long>> deleteIssue(@PathVariable Long id, @AuthenticationPrincipal User user) throws AccessDeniedException {
+        issueService.deleteIssueById(id, user);
 
         Map<String, Long> map = new HashMap<>();
         map.put("id", id);
@@ -54,8 +57,8 @@ public class IssueController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<IssueResponse> updateIssue(@PathVariable Long id, @RequestBody @Valid IssueRequest request) {
-        IssueResponse response = issueService.updateIssueById(id, request);
+    public ApiResponse<IssueResponse> updateIssue(@PathVariable Long id, @RequestBody @Valid IssueRequest request, @AuthenticationPrincipal User user) throws AccessDeniedException {
+        IssueResponse response = issueService.updateIssueById(id, request, user);
 
         return ApiResponseUtil.success(response, "Issue found and updated");
     }

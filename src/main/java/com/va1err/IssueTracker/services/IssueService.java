@@ -2,6 +2,7 @@ package com.va1err.IssueTracker.services;
 
 import com.va1err.IssueTracker.dto.requests.IssueRequest;
 import com.va1err.IssueTracker.dto.responses.IssueResponse;
+import com.va1err.IssueTracker.enums.Role;
 import com.va1err.IssueTracker.exceptions.IssueNotFoundException;
 import com.va1err.IssueTracker.exceptions.ProjectNotFoundException;
 import com.va1err.IssueTracker.exceptions.UserNotFoundException;
@@ -14,6 +15,7 @@ import com.va1err.IssueTracker.repositories.UserRepository;
 import com.va1err.IssueTracker.utils.IssueUtil;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -63,14 +65,20 @@ public class IssueService {
         return IssueUtil.toResponse(issue);
     }
 
-    public void deleteIssueById(Long id) {
-        if (!issueRepository.existsById(id))
+    public void deleteIssueById(Long id, User currentUser) throws AccessDeniedException {
+        if (!issueRepository.existsById(id) || issueRepository.findById(id).isEmpty())
             throw new IssueNotFoundException(id);
+
+        boolean isOwner = issueRepository.findById(id).get().getOwner().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isAdmin)
+            throw new AccessDeniedException("Not allowed to delete other user's issue");
 
         issueRepository.deleteById(id);
     }
 
-    public IssueResponse updateIssueById(Long id, IssueRequest request) {
+    public IssueResponse updateIssueById(Long id, IssueRequest request, User currentUser) throws AccessDeniedException {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(() -> new IssueNotFoundException(id));
 
@@ -79,6 +87,12 @@ public class IssueService {
 
         Project project = projectRepository.findByOwnerIdAndId(user.getId(), request.getProjectId())
                 .orElseThrow(() -> new ProjectNotFoundException(request.getProjectId()));
+
+        boolean isOwner = issue.getOwner().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isAdmin)
+            throw new AccessDeniedException("Not allowed to update other user's issue");
 
         issue.setTitle(request.getTitle());
         issue.setDescription(request.getDescription());

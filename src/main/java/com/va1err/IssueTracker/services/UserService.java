@@ -4,6 +4,7 @@ import com.va1err.IssueTracker.dto.requests.UserRequest;
 import com.va1err.IssueTracker.dto.responses.IssueResponse;
 import com.va1err.IssueTracker.dto.responses.ProjectResponse;
 import com.va1err.IssueTracker.dto.responses.UserResponse;
+import com.va1err.IssueTracker.enums.Role;
 import com.va1err.IssueTracker.exceptions.IssueNotFoundException;
 import com.va1err.IssueTracker.exceptions.ProjectNotFoundException;
 import com.va1err.IssueTracker.exceptions.UserNotFoundException;
@@ -18,6 +19,7 @@ import com.va1err.IssueTracker.utils.ProjectUtil;
 import com.va1err.IssueTracker.utils.UserUtil;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -99,16 +101,28 @@ public class UserService {
         return IssueUtil.toResponse(issue);
     }
 
-    public void deleteUserById(Long id) {
+    public void deleteUserById(Long id, User currentUser) throws AccessDeniedException {
         if (!userRepository.existsById(id))
             throw new UserNotFoundException(id);
+
+        boolean isThemself = id.equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+        if (!isThemself && !isAdmin)
+            throw new AccessDeniedException("Not allowed to delete other user");
 
         userRepository.deleteById(id);
     }
 
-    public UserResponse updateUserById(Long id, UserRequest request) {
+    public UserResponse updateUserById(Long id, UserRequest request, User currentUser) throws AccessDeniedException {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+
+        boolean isThemself = id.equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+        if (!isThemself && !isAdmin)
+            throw new AccessDeniedException("Not allowed to update other user");
 
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
