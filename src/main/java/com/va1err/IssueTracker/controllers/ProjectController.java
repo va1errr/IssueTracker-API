@@ -3,11 +3,18 @@ package com.va1err.IssueTracker.controllers;
 import com.va1err.IssueTracker.dto.requests.ProjectRequest;
 import com.va1err.IssueTracker.dto.responses.ApiResponse;
 import com.va1err.IssueTracker.dto.responses.ProjectResponse;
+import com.va1err.IssueTracker.models.User;
 import com.va1err.IssueTracker.services.ProjectService;
 import com.va1err.IssueTracker.utils.ApiResponseUtil;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +37,8 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ApiResponse<List<ProjectResponse>> getAllProjects() {
-        List<ProjectResponse> response = projectService.getAllProjects();
+    public ApiResponse<Page<ProjectResponse>> getAllProjects(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getAllProjects(pageable);
 
         return ApiResponseUtil.success(response, "Projects fetched successfully");
     }
@@ -44,8 +51,8 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Map<String, Long>> deleteProject(@PathVariable Long id) {
-        projectService.deleteProjectById(id);
+    public ApiResponse<Map<String, Long>> deleteProject(@PathVariable Long id, @AuthenticationPrincipal User user) throws AccessDeniedException {
+        projectService.deleteProjectById(id, user);
 
         Map<String, Long> map = new HashMap<>();
         map.put("id", id);
@@ -54,8 +61,8 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody @Valid ProjectRequest request) {
-        ProjectResponse response = projectService.updateProjectById(id, request);
+    public ApiResponse<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody @Valid ProjectRequest request, @AuthenticationPrincipal User user) throws AccessDeniedException {
+        ProjectResponse response = projectService.updateProjectById(id, request, user);
 
         return ApiResponseUtil.success(response, "Project found and updated");
     }

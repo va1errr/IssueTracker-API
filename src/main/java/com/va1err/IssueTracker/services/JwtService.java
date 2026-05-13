@@ -1,5 +1,6 @@
 package com.va1err.IssueTracker.services;
 
+import com.va1err.IssueTracker.models.SecurityUser;
 import com.va1err.IssueTracker.models.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -44,10 +45,10 @@ public class JwtService {
                 .getSubject();
     }
 
-    public boolean isTokenValid(String token, User user) {
+    public boolean isTokenValid(String token, SecurityUser user) {
         String email = extractEmail(token);
 
-        return email.equals(user.getEmail());
+        return email.equals(user.getUsername());
     }
 
 }

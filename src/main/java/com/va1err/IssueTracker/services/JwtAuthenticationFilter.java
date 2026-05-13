@@ -1,5 +1,6 @@
 package com.va1err.IssueTracker.services;
 
+import com.va1err.IssueTracker.models.SecurityUser;
 import com.va1err.IssueTracker.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-            if (jwtService.isTokenValid(jwt, (User) userDetails)) {
+            if (jwtService.isTokenValid(jwt, (SecurityUser) userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
